@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>TranscriptAI - Free Video to Text</title>
+<title>TranscriptAI - Free Video to Text (Fixed)</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@300;400;500&display=swap');
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -20,8 +20,8 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);pad
 .dot{width:6px;height:6px;border-radius:50%;background:var(--accent2);animation:pulse 2s infinite}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:0.3}}
 .main{padding:1.5rem 2rem;max-width:860px;margin:0 auto}
-.info-box{background:rgba(124,110,232,0.08);border:1px solid rgba(124,110,232,0.2);border-radius:14px;padding:1rem 1.25rem;margin-bottom:1.5rem;font-size:13px;color:var(--muted);line-height:1.6}
-.info-box strong{color:var(--accent);font-weight:500}
+.howto{background:rgba(78,205,196,0.06);border:1px solid rgba(78,205,196,0.15);border-radius:12px;padding:1rem 1.25rem;margin-bottom:1.5rem;font-size:13px;color:var(--muted);line-height:1.7}
+.howto strong{color:var(--accent2)}
 .upload-zone{background:var(--surface);border:2px dashed var(--border);border-radius:16px;padding:2.5rem 2rem;text-align:center;cursor:pointer;transition:border-color 0.2s,background 0.2s;margin-bottom:1.5rem}
 .upload-zone:hover,.upload-zone.dragover{border-color:var(--accent);background:rgba(124,110,232,0.05)}
 .upload-icon{font-size:36px;margin-bottom:0.75rem}
@@ -45,19 +45,20 @@ video{width:100%;border-radius:10px;background:#000;margin-bottom:1rem;max-heigh
 .btn-success{background:#1D9E75;color:#fff}
 .btn-danger{background:var(--error);color:#fff}
 .btn-outline{background:transparent;border:1px solid var(--border);color:var(--text)}
-.status-bar{display:flex;align-items:center;gap:8px;font-size:13px;margin-bottom:1rem;padding:8px 12px;border-radius:8px;background:var(--surface2)}
+.status-bar{display:flex;align-items:center;gap:8px;font-size:13px;margin-bottom:1rem;padding:10px 14px;border-radius:8px;background:var(--surface2)}
 .status-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
 .status-idle .status-dot{background:var(--muted)}
 .status-listening .status-dot{background:var(--success);animation:pulse 1s infinite}
-.status-paused .status-dot{background:var(--warning)}
 .status-done .status-dot{background:var(--success)}
+.status-error .status-dot{background:var(--error)}
 .lang-row{display:flex;align-items:center;gap:10px;margin-bottom:1rem}
 .lang-row label{font-size:13px;color:var(--muted);white-space:nowrap}
 .lang-select{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:7px 10px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:13px;outline:none;flex:1}
-.transcript-box{background:var(--surface2);border-radius:10px;padding:1rem;min-height:120px;max-height:280px;overflow-y:auto;font-size:14px;line-height:1.8;color:var(--text);white-space:pre-wrap;font-family:'DM Sans',sans-serif;border:1px solid var(--border)}
+.transcript-box{background:var(--surface2);border-radius:10px;padding:1rem;min-height:140px;max-height:300px;overflow-y:auto;font-size:14px;line-height:1.8;color:var(--text);white-space:pre-wrap;font-family:'DM Sans',sans-serif;border:1px solid var(--border)}
 .transcript-box::-webkit-scrollbar{width:4px}
 .transcript-box::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
-.transcript-placeholder{color:var(--muted);font-size:13px}
+.placeholder{color:var(--muted);font-size:13px}
+.interim{color:var(--muted);font-style:italic}
 .word-count{font-size:12px;color:var(--muted);margin-top:6px;text-align:right}
 .download-row{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
 .toast{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:10px 14px;font-size:13px;margin-top:1rem;display:none}
@@ -65,7 +66,6 @@ video{width:100%;border-radius:10px;background:#000;margin-bottom:1rem;max-heigh
 .toast.success{border-color:var(--success);color:var(--success)}
 .toast.error{border-color:var(--error);color:var(--error)}
 .section-label{font-family:'Syne',sans-serif;font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px}
-.no-support{background:rgba(226,75,74,0.1);border:1px solid rgba(226,75,74,0.3);border-radius:12px;padding:1rem 1.25rem;font-size:13px;color:var(--error);margin-bottom:1rem;display:none}
 </style>
 </head>
 <body>
@@ -74,20 +74,15 @@ video{width:100%;border-radius:10px;background:#000;margin-bottom:1rem;max-heigh
   <div class="logo">🎙</div>
   <div>
     <div class="logo-text">TranscriptAI</div>
-    <div class="logo-sub">Video to Text — No API Key Needed</div>
+    <div class="logo-sub">Video Audio → Direct Transcript — No API Key</div>
   </div>
   <div class="free-badge"><div class="dot"></div> 100% Free</div>
 </div>
 
 <div class="main">
 
-  <div class="no-support" id="noSupport">
-    Your browser does not support Web Speech API. Please use Chrome or Edge for best results.
-  </div>
-
-  <div class="info-box">
-    <strong>How this works:</strong> Upload your video → it plays in the player → browser's built-in AI listens and transcribes in real time. Works with <strong>Telugu, Hindi, English</strong> and 50+ languages. No internet API needed — everything runs in your browser!<br><br>
-    <strong>Tip:</strong> Use headphones or keep volume up so the mic can hear the video clearly. Works best in Chrome.
+  <div class="howto">
+    <strong>✅ Fixed Version:</strong> Video upload chesthe audio automatic ga capture avutundi — video play avutunnappudu real-time transcript generate avutundi. <strong>Chrome lo best ga work avutundi.</strong> Volume unmute cheyyi!
   </div>
 
   <div id="uploadArea">
@@ -111,7 +106,7 @@ video{width:100%;border-radius:10px;background:#000;margin-bottom:1rem;max-heigh
         <button class="remove-btn" onclick="resetAll()">✕</button>
       </div>
 
-      <video id="videoPlayer" controls></video>
+      <video id="videoPlayer" controls crossorigin="anonymous"></video>
 
       <div class="lang-row">
         <label>Language:</label>
@@ -141,26 +136,26 @@ video{width:100%;border-radius:10px;background:#000;margin-bottom:1rem;max-heigh
       </div>
 
       <div class="controls">
-        <button class="btn btn-primary" id="startBtn" onclick="startTranscription()">▶ Start Transcription</button>
+        <button class="btn btn-primary" id="startBtn" onclick="startTranscription()">▶ Start &amp; Transcribe</button>
         <button class="btn btn-danger" id="stopBtn" onclick="stopTranscription()" disabled>⬛ Stop</button>
-        <button class="btn btn-outline" onclick="clearTranscript()">🗑 Clear Text</button>
+        <button class="btn btn-outline" onclick="clearTranscript()">🗑 Clear</button>
       </div>
 
       <div class="status-bar status-idle" id="statusBar">
         <div class="status-dot"></div>
-        <span id="statusText">Ready — press Start Transcription then play the video</span>
+        <span id="statusText">Ready — select language and click Start &amp; Transcribe</span>
       </div>
 
-      <div class="section-label">Transcript</div>
+      <div class="section-label">Live Transcript</div>
       <div class="transcript-box" id="transcriptBox">
-        <span class="transcript-placeholder">Transcript will appear here as the video plays...</span>
+        <span class="placeholder">Transcript appears here automatically as video plays...</span>
       </div>
       <div class="word-count" id="wordCount"></div>
 
       <div class="download-row">
-        <button class="btn btn-success" onclick="downloadTxt()" id="dlBtn" disabled>⬇ Download .txt</button>
-        <button class="btn btn-outline" onclick="copyText()" id="copyBtn" disabled>📋 Copy All</button>
-        <button class="btn btn-outline" onclick="document.getElementById('fileInput').click()">📁 New Video</button>
+        <button class="btn btn-success" id="dlBtn" onclick="downloadTxt()" disabled>⬇ Download .txt</button>
+        <button class="btn btn-outline" id="copyBtn" onclick="copyText()" disabled>📋 Copy All</button>
+        <button class="btn btn-outline" onclick="resetAll()">📁 New Video</button>
       </div>
 
       <div class="toast" id="toast"></div>
@@ -172,151 +167,181 @@ video{width:100%;border-radius:10px;background:#000;margin-bottom:1rem;max-heigh
 <script>
 let recognition = null;
 let finalTranscript = '';
+let interimText = '';
 let isListening = false;
 let currentFile = null;
+let audioCtx = null;
+let sourceNode = null;
+let streamDest = null;
 
-function checkSupport() {
-  if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
-    document.getElementById('noSupport').style.display = 'block';
-    return false;
-  }
-  return true;
+function onDragOver(e){e.preventDefault();document.getElementById('uploadZone').classList.add('dragover')}
+function onDragLeave(){document.getElementById('uploadZone').classList.remove('dragover')}
+function onDrop(e){e.preventDefault();document.getElementById('uploadZone').classList.remove('dragover');if(e.dataTransfer.files[0])loadFile(e.dataTransfer.files[0])}
+
+function formatSize(b){
+  if(b<1024*1024)return(b/1024).toFixed(1)+' KB';
+  if(b<1024*1024*1024)return(b/1024/1024).toFixed(1)+' MB';
+  return(b/1024/1024/1024).toFixed(2)+' GB';
 }
 
-checkSupport();
-
-function onDragOver(e) { e.preventDefault(); document.getElementById('uploadZone').classList.add('dragover'); }
-function onDragLeave() { document.getElementById('uploadZone').classList.remove('dragover'); }
-function onDrop(e) { e.preventDefault(); document.getElementById('uploadZone').classList.remove('dragover'); if (e.dataTransfer.files[0]) loadFile(e.dataTransfer.files[0]); }
-
-function formatSize(b) {
-  if (b < 1024*1024) return (b/1024).toFixed(1)+' KB';
-  if (b < 1024*1024*1024) return (b/1024/1024).toFixed(1)+' MB';
-  return (b/1024/1024/1024).toFixed(2)+' GB';
+function loadFile(file){
+  if(!file)return;
+  currentFile=file;
+  const url=URL.createObjectURL(file);
+  const vid=document.getElementById('videoPlayer');
+  vid.src=url;
+  document.getElementById('fileName').textContent=file.name;
+  document.getElementById('fileSize').textContent=formatSize(file.size);
+  document.getElementById('uploadArea').style.display='none';
+  document.getElementById('playerArea').style.display='block';
+  finalTranscript='';interimText='';
+  renderTranscript();
 }
 
-function loadFile(file) {
-  if (!file) return;
-  currentFile = file;
-  const url = URL.createObjectURL(file);
-  document.getElementById('videoPlayer').src = url;
-  document.getElementById('fileName').textContent = file.name;
-  document.getElementById('fileSize').textContent = formatSize(file.size);
-  document.getElementById('uploadArea').style.display = 'none';
-  document.getElementById('playerArea').style.display = 'block';
-  finalTranscript = '';
-  updateTranscriptBox('');
-}
-
-function resetAll() {
+function resetAll(){
   stopTranscription();
-  document.getElementById('videoPlayer').src = '';
-  document.getElementById('uploadArea').style.display = 'block';
-  document.getElementById('playerArea').style.display = 'none';
-  finalTranscript = '';
-  document.getElementById('fileInput').value = '';
+  const vid=document.getElementById('videoPlayer');
+  vid.pause();vid.src='';
+  document.getElementById('uploadArea').style.display='block';
+  document.getElementById('playerArea').style.display='none';
+  finalTranscript='';interimText='';
+  document.getElementById('fileInput').value='';
+  renderTranscript();
+  if(audioCtx){try{audioCtx.close()}catch(e){}audioCtx=null;sourceNode=null;streamDest=null;}
 }
 
-function setStatus(type, text) {
-  const bar = document.getElementById('statusBar');
-  bar.className = 'status-bar status-' + type;
-  document.getElementById('statusText').textContent = text;
+function setStatus(type,text){
+  const bar=document.getElementById('statusBar');
+  bar.className='status-bar status-'+type;
+  document.getElementById('statusText').textContent=text;
 }
 
-function updateTranscriptBox(interim) {
-  const box = document.getElementById('transcriptBox');
-  const full = finalTranscript + (interim ? ' ' + interim : '');
-  if (!full.trim()) {
-    box.innerHTML = '<span class="transcript-placeholder">Transcript will appear here as the video plays...</span>';
-    document.getElementById('wordCount').textContent = '';
-    document.getElementById('dlBtn').disabled = true;
-    document.getElementById('copyBtn').disabled = true;
-  } else {
-    box.textContent = full.trim();
-    box.scrollTop = box.scrollHeight;
-    const wc = full.trim().split(/\s+/).filter(Boolean).length;
-    document.getElementById('wordCount').textContent = wc + ' words';
-    document.getElementById('dlBtn').disabled = false;
-    document.getElementById('copyBtn').disabled = false;
+function renderTranscript(){
+  const box=document.getElementById('transcriptBox');
+  const wc=document.getElementById('wordCount');
+  if(!finalTranscript.trim()&&!interimText.trim()){
+    box.innerHTML='<span class="placeholder">Transcript appears here automatically as video plays...</span>';
+    wc.textContent='';
+    document.getElementById('dlBtn').disabled=true;
+    document.getElementById('copyBtn').disabled=true;
+    return;
   }
+  box.innerHTML='';
+  if(finalTranscript.trim()){
+    box.appendChild(document.createTextNode(finalTranscript));
+  }
+  if(interimText.trim()){
+    const span=document.createElement('span');
+    span.className='interim';
+    span.textContent=' '+interimText;
+    box.appendChild(span);
+  }
+  box.scrollTop=box.scrollHeight;
+  const total=(finalTranscript+' '+interimText).trim();
+  const count=total.split(/\s+/).filter(Boolean).length;
+  wc.textContent=count+' words';
+  document.getElementById('dlBtn').disabled=false;
+  document.getElementById('copyBtn').disabled=false;
 }
 
-function startTranscription() {
-  if (!checkSupport()) return;
-  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-  recognition = new SpeechRecognition();
-  recognition.lang = document.getElementById('langSelect').value;
-  recognition.continuous = true;
-  recognition.interimResults = true;
-
-  recognition.onstart = () => {
-    isListening = true;
-    setStatus('listening', 'Listening... Now play your video!');
-    document.getElementById('startBtn').disabled = true;
-    document.getElementById('stopBtn').disabled = false;
-  };
-
-  recognition.onresult = (e) => {
-    let interim = '';
-    for (let i = e.resultIndex; i < e.results.length; i++) {
-      const t = e.results[i][0].transcript;
-      if (e.results[i].isFinal) { finalTranscript += t + ' '; }
-      else { interim += t; }
+async function startTranscription(){
+  if(!('webkitSpeechRecognition' in window)&&!('SpeechRecognition' in window)){
+    setStatus('error','Web Speech API not supported. Use Chrome browser.');
+    return;
+  }
+  const vid=document.getElementById('videoPlayer');
+  try{
+    if(!audioCtx){
+      audioCtx=new (window.AudioContext||window.webkitAudioContext)();
+      sourceNode=audioCtx.createMediaElementSource(vid);
+      streamDest=audioCtx.createMediaStreamDestination();
+      sourceNode.connect(audioCtx.destination);
+      sourceNode.connect(streamDest);
     }
-    updateTranscriptBox(interim);
+  } catch(e){
+    if(!streamDest){setStatus('error','Audio setup failed: '+e.message);return;}
+  }
+
+  const SpeechRecognition=window.SpeechRecognition||window.webkitSpeechRecognition;
+  recognition=new SpeechRecognition();
+  recognition.lang=document.getElementById('langSelect').value;
+  recognition.continuous=true;
+  recognition.interimResults=true;
+  try{recognition.stream=streamDest.stream;}catch(e){}
+
+  recognition.onstart=()=>{
+    isListening=true;
+    setStatus('listening','Listening to video audio... Video play avutundi!');
+    document.getElementById('startBtn').disabled=true;
+    document.getElementById('stopBtn').disabled=false;
+    vid.play();
   };
 
-  recognition.onerror = (e) => {
-    if (e.error === 'no-speech') return;
-    setStatus('idle', 'Error: ' + e.error + '. Try again.');
+  recognition.onresult=(e)=>{
+    interimText='';
+    for(let i=e.resultIndex;i<e.results.length;i++){
+      const t=e.results[i][0].transcript;
+      if(e.results[i].isFinal){finalTranscript+=t+' ';interimText='';}
+      else{interimText+=t;}
+    }
+    renderTranscript();
   };
 
-  recognition.onend = () => {
-    if (isListening) {
-      try { recognition.start(); } catch(err) {}
-    } else {
-      setStatus('done', 'Transcription stopped.');
-      document.getElementById('startBtn').disabled = false;
-      document.getElementById('stopBtn').disabled = true;
+  recognition.onerror=(e)=>{
+    if(e.error==='no-speech'||e.error==='aborted')return;
+    setStatus('error','Error: '+e.error);
+  };
+
+  recognition.onend=()=>{
+    interimText='';
+    if(isListening&&!vid.paused&&!vid.ended){
+      try{recognition.start();}catch(err){}
+    } else if(!isListening){
+      setStatus('done','Done! Transcript ready — download below.');
+      document.getElementById('startBtn').disabled=false;
+      document.getElementById('stopBtn').disabled=true;
+      renderTranscript();
     }
   };
+
+  vid.addEventListener('play',()=>{if(isListening&&recognition){try{recognition.start();}catch(e){}}});
+  vid.addEventListener('pause',()=>{if(isListening&&recognition){try{recognition.stop();}catch(e){}}});
+  vid.addEventListener('ended',()=>{stopTranscription();});
 
   recognition.start();
 }
 
-function stopTranscription() {
-  isListening = false;
-  if (recognition) { try { recognition.stop(); } catch(e){} recognition = null; }
-  document.getElementById('startBtn').disabled = false;
-  document.getElementById('stopBtn').disabled = true;
-  setStatus('done', 'Done! Download your transcript below.');
+function stopTranscription(){
+  isListening=false;
+  if(recognition){try{recognition.stop();}catch(e){}recognition=null;}
+  interimText='';
+  document.getElementById('startBtn').disabled=false;
+  document.getElementById('stopBtn').disabled=true;
+  setStatus('done','Stopped. Download transcript below.');
+  renderTranscript();
 }
 
-function clearTranscript() {
-  finalTranscript = '';
-  updateTranscriptBox('');
+function clearTranscript(){finalTranscript='';interimText='';renderTranscript();}
+
+function showToast(msg,type){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.className='toast show '+type;
+  setTimeout(()=>t.className='toast',2500);
 }
 
-function showToast(msg, type) {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.className = 'toast show ' + type;
-  setTimeout(() => t.className = 'toast', 2500);
-}
-
-function downloadTxt() {
-  if (!finalTranscript.trim()) return;
-  const name = (currentFile ? currentFile.name.replace(/\.[^.]+$/,'') : 'transcript');
-  const blob = new Blob([finalTranscript.trim()], {type:'text/plain;charset=utf-8'});
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = name + '_transcript.txt';
+function downloadTxt(){
+  if(!finalTranscript.trim())return;
+  const name=(currentFile?currentFile.name.replace(/\.[^.]+$/,''):'transcript');
+  const blob=new Blob([finalTranscript.trim()],{type:'text/plain;charset=utf-8'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download=name+'_transcript.txt';
   a.click();
-  showToast('Downloaded!', 'success');
+  showToast('Downloaded!','success');
 }
 
-function copyText() {
-  navigator.clipboard.writeText(finalTranscript.trim()).then(() => showToast('Copied!', 'success'));
+function copyText(){
+  navigator.clipboard.writeText(finalTranscript.trim()).then(()=>showToast('Copied!','success'));
 }
 </script>
 </body>
